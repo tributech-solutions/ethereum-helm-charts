@@ -5,7 +5,7 @@
 - sh
 - -ac
 - >
-{{- if .Values.p2pNodePort.enabled }}
+{{- if and .Values.p2pNodePort.enabled .Values.p2pNodePort.initContainer.enabled }}
   . /env/init-nodeport;
 {{- end }}
   exec besu

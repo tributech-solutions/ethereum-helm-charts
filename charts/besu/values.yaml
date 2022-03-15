@@ -32,6 +32,8 @@ p2pNodePort:
   # -- NodePort to be used
   port: 31000
   initContainer:
+    # disable init-nodeport container (you will need to manually provide EXTERNAL_IP and EXTERNAL_PORT env vars)
+    enabled: true
     image:
       # -- Container image to fetch nodeport information
       repository: lachlanevenson/k8s-kubectl
