@@ -97,7 +97,7 @@ spec:
           {{- end }}
           volumeMounts:
             {{- if .Values.extraVolumeMounts }}
-              {{ toYaml .Values.extraVolumeMounts | nindent 12}}
+              {{ (tpl (toYaml .Values.extraVolumeMounts) .) | nindent 12}}
             {{- end }}
             {{- if .Values.p2pNodePort.enabled }}
             - name: env-nodeport
@@ -140,7 +140,7 @@ spec:
                   key: {{ $key }}
           {{- end }}
           {{- if .Values.extraEnv }}
-            {{- toYaml .Values.extraEnv | nindent 12 }}
+            {{- (tpl (toYaml .Values.extraEnv) .) | nindent 12 }}
           {{- end }}
       {{- if .Values.extraContainers }}
         {{ toYaml .Values.extraContainers | nindent 8}}
@@ -158,7 +158,7 @@ spec:
           emptyDir: {}
       {{- end }}
       {{- if .Values.extraVolumes }}
-        {{ toYaml .Values.extraVolumes | nindent 8}}
+        {{ (tpl (toYaml .Values.extraVolumes) .) | nindent 8}}
       {{- end }}
   {{- if not .Values.persistence.enabled }}
         - name: storage

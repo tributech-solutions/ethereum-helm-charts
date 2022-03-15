@@ -30,6 +30,6 @@
   --metrics-host=0.0.0.0
   --metrics-port={{ include "besu.metricsPort" . }}
 {{- range .Values.extraArgs }}
-  {{ . }}
+  {{ (tpl . $) }}
 {{- end }}
 {{- end }}
