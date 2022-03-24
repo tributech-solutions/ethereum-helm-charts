@@ -10,11 +10,11 @@
 {{- end }}
   exec besu
   --data-path=/data
-  --nat-method=NONE
-{{- if .Values.p2pNodePort.enabled }}
+  --nat-method={{ .Values.natMethod }}
+{{- if and .Values.p2pNodePort.enabled (eq .Values.natMethod "NONE")}}
   --p2p-host=$EXTERNAL_IP
   --p2p-port=$EXTERNAL_PORT
-{{- else }}
+{{- else if (eq .Values.natMethod "NONE") }}
   --p2p-host=$(POD_IP)
   --p2p-port={{ include "besu.p2pPort" . }}
 {{- end }}
