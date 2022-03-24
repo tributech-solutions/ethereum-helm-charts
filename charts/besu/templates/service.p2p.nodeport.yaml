@@ -11,19 +11,25 @@ metadata:
     pod: {{ include "besu.fullname" $ }}-0
     type: p2p
 spec:
-  type: NodePort
-  externalTrafficPolicy: Local
+  type: {{ $.Values.p2pNodePort.type }}
+  externalTrafficPolicy: {{ $.Values.p2pNodePort.externalTrafficPolicy }}
   ports:
     - name: p2p-tcp
       port: {{ include "besu.p2pPort" $ }}
       protocol: TCP
       targetPort: p2p-tcp
+      {{- if (eq $.Values.p2pNodePort.type "NodePort") }}
       nodePort: {{ $port }}
+      {{- end }}
+    {{- if $.Values.p2pNodePort.udpEnabled }}
     - name: p2p-udp
       port: {{ include "besu.p2pPort" $ }}
       protocol: UDP
       targetPort: p2p-udp
+      {{- if (eq $.Values.p2pNodePort.type "NodePort") }}
       nodePort: {{ $port }}
+      {{- end }}
+    {{- end }}
   selector:
     {{- include "besu.selectorLabels" $ | nindent 4 }}
     statefulset.kubernetes.io/pod-name: "{{ include "besu.fullname" $ }}-0"

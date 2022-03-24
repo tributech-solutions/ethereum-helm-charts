@@ -29,10 +29,16 @@ customCommand: [] # Only change this if you need to change the default command
 p2pNodePort:
   # -- Expose P2P port via NodePort
   enabled: false
+  # -- Service type. Default: NodePort. (Allows to override with e.g. LoadBalancer)
+  type: NodePort 
+  # -- External traffic policy. Default: Local.
+  externalTrafficPolicy: Local
   # -- NodePort to be used
   port: 31000
+  # -- UDP port enabled (Allow to opt-out from exposing UDP port e.g. to avoid mixed protocol issue)
+  udpEnabled: true
   initContainer:
-    # disable init-nodeport container (you will need to manually provide EXTERNAL_IP and EXTERNAL_PORT env vars)
+    # -- Disable init-nodeport container (you will need to manually provide EXTERNAL_IP and EXTERNAL_PORT env vars)
     enabled: true
     image:
       # -- Container image to fetch nodeport information
