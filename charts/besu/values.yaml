@@ -22,6 +22,10 @@ extraArgs: []
 # -- Command replacement for the besu container
 customCommand: [] # Only change this if you need to change the default command
 
+# -- NAT method.  Options are: UPNP, KUBERNETES, DOCKER, AUTO, and NONE. NONE is required if using p2pNodePort.
+# https://besu.hyperledger.org/en/stable/HowTo/Find-and-Connect/Specifying-NAT/
+natMethod: NONE
+
 # When p2pNodePort is enabled, your P2P port will be exposed via service type NodePort.
 # This is useful if you want to expose and announce your node to the Internet.
 # Limitation: You can only one have one replica when exposing via NodePort.
@@ -144,7 +148,7 @@ rbac:
       - "get"
       - "list"
       - "watch"
-  # -- Required ClusterRole rules
+  # -- Required Role rules
   # @default -- See `values.yaml`
   rules:
     # Required to get information about the serices nodePort.
