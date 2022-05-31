@@ -12,7 +12,7 @@ metadata:
     type: p2p
   {{- if .Values.p2pNodePort.annotations }}
   annotations:
-    {{- $.Values.p2pNodePort.annotations | toYaml | nindent 4 }}
+    {{- (tpl (.Values.p2pNodePort.annotations | toYaml) $)  | nindent 4 }}
   {{- end }}
 spec:
   type: {{ $.Values.p2pNodePort.type }}
