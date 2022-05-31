@@ -33,6 +33,8 @@ natMethod: NONE
 p2pNodePort:
   # -- Expose P2P port via NodePort
   enabled: false
+  # -- P2P service annotations
+  annotations: {}
   # -- Service type. Default: NodePort. (Allows to override with e.g. LoadBalancer)
   type: NodePort
   # -- External traffic policy. Default: Local.

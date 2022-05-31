@@ -10,7 +10,7 @@ sources:
   - https://github.com/skylenet/ethereum-helm-charts
   - https://github.com/tributech-solutions/ethereum-helm-charts
 type: application
-version: 0.2.4 # customizations based on official 0.2.0
+version: 0.2.5 # customizations based on official 0.2.0
 maintainers:
   - name: skylenet
     email: rafael@skyle.net
