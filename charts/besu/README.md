@@ -1,15 +1,22 @@
 
 # besu
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+
+
+![Version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) 
 
 An Ethereum execution layer client designed to be enterprise-friendly for both public and private, permissioned network use cases. Besu is written in Java and released under the Apache 2.0 Licence.
+
 
 **Homepage:** <https://www.hyperledger.org/use/besu>
 
 ## Source Code
 
 * <https://github.com/hyperledger/besu>
+* <https://github.com/skylenet/ethereum-helm-charts>
+* <https://github.com/tributech-solutions/ethereum-helm-charts>
+
+
 
 ## Values
 
@@ -42,15 +49,21 @@ An Ethereum execution layer client designed to be enterprise-friendly for both p
 | initContainers | list | `[]` | Additional init containers |
 | livenessProbe | object | See `values.yaml` | Liveness probe |
 | nameOverride | string | `""` | Overrides the chart's name |
+| natMethod | string | `"NONE"` | NAT method.  Options are: UPNP, KUBERNETES, DOCKER, AUTO, and NONE. NONE is required if using p2pNodePort. https://besu.hyperledger.org/en/stable/HowTo/Find-and-Connect/Specifying-NAT/ |
 | nodeSelector | object | `{}` | Node selector for pods |
 | p2pNodePort.enabled | bool | `false` | Expose P2P port via NodePort |
+| p2pNodePort.externalTrafficPolicy | string | `"Local"` | External traffic policy. Default: Local. |
+| p2pNodePort.initContainer.enabled | bool | `true` | Disable init-nodeport container (you will need to manually provide EXTERNAL_IP and EXTERNAL_PORT env vars) |
 | p2pNodePort.initContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
 | p2pNodePort.initContainer.image.repository | string | `"lachlanevenson/k8s-kubectl"` | Container image to fetch nodeport information |
 | p2pNodePort.initContainer.image.tag | string | `"v1.21.3"` | Container tag |
+| p2pNodePort.annotations | object | `{}` | P2P service annotations |
 | p2pNodePort.port | int | `31000` | NodePort to be used |
 | p2pNodePort.portForwardContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
 | p2pNodePort.portForwardContainer.image.repository | string | `"alpine/socat"` | Container image for the port forwarder |
 | p2pNodePort.portForwardContainer.image.tag | string | `"latest"` | Container tag |
+| p2pNodePort.type | string | `"NodePort"` | Service type. Default: NodePort. (Allows to override with e.g. LoadBalancer) |
+| p2pNodePort.udpEnabled | bool | `true` | UDP port enabled (Allow to opt-out from exposing UDP port e.g. to avoid mixed protocol issue) |
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access mode for the volume claim template |
 | persistence.annotations | object | `{}` | Annotations for volume claim template |
 | persistence.enabled | bool | `false` | Uses an EmptyDir when not enabled |
@@ -64,7 +77,7 @@ An Ethereum execution layer client designed to be enterprise-friendly for both p
 | priorityClassName | string | `nil` | Pod priority class |
 | rbac.clusterRules | list | See `values.yaml` | Required ClusterRole rules |
 | rbac.create | bool | `true` | Specifies whether RBAC resources are to be created |
-| rbac.rules | list | See `values.yaml` | Required ClusterRole rules |
+| rbac.rules | list | See `values.yaml` | Required Role rules |
 | readinessProbe | object | See `values.yaml` | Readiness probe |
 | replicas | int | `1` | Number of replicas |
 | resources | object | `{}` | Resource requests and limits |

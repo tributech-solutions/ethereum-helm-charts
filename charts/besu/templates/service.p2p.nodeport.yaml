@@ -10,6 +10,10 @@ metadata:
     {{- include "besu.labels" $ | nindent 4 }}
     pod: {{ include "besu.fullname" $ }}-0
     type: p2p
+  {{- if .Values.p2pNodePort.annotations }}
+  annotations:
+    {{- $.Values.p2pNodePort.annotations | toYaml | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ $.Values.p2pNodePort.type }}
   externalTrafficPolicy: {{ $.Values.p2pNodePort.externalTrafficPolicy }}
