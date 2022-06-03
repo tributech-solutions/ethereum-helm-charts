@@ -1,7 +1,7 @@
 
 # besu
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 An Ethereum execution layer client designed to be enterprise-friendly for both public and private, permissioned network use cases. Besu is written in Java and released under the Apache 2.0 Licence.
 
@@ -46,6 +46,9 @@ An Ethereum execution layer client designed to be enterprise-friendly for both p
 | p2pLoadBalancerPort.annotations | object | `{}` | P2P LoadBalancer service annotations (evaluated as template) |
 | p2pLoadBalancerPort.enabled | bool | `false` | Expose P2P TCP port via LoadBalancer service |
 | p2pLoadBalancerPort.externalTrafficPolicy | string | Local    | Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints. There are two available options: Cluster and Local (default). Cluster obscures the client source IP and may cause a second hop to another node, but should have good overall load-spreading. Local preserves the client source IP and avoids a second hop for LoadBalancer and NodePort type Services, but risks potentially imbalanced traffic spreading. ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip |
+| p2pLoadBalancerPort.initContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
+| p2pLoadBalancerPort.initContainer.image.repository | string | `"lachlanevenson/k8s-kubectl"` | Container image to fetch loadbalancer service information |
+| p2pLoadBalancerPort.initContainer.image.tag | string | `"v1.21.3"` | Container tag |
 | p2pLoadBalancerPort.port | int | `30303` | Port to be used |
 | p2pNodePort.enabled | bool | `false` | Expose P2P port via NodePort |
 | p2pNodePort.initContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
