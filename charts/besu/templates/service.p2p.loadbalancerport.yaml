@@ -1,0 +1,25 @@
+{{- if .Values.p2pLoadBalancerPort.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "besu.fullname" $ }}-p2p-lb-0
+  labels:
+    {{- include "besu.labels" $ | nindent 4 }}
+    pod: {{ include "besu.fullname" $ }}-0
+    type: p2p-lb
+  {{- if .Values.p2pLoadBalancerPort.annotations }}
+  annotations:
+    {{- (tpl (.Values.p2pLoadBalancerPort.annotations | toYaml) $)  | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: {{ .Values.p2pLoadBalancerPort.externalTrafficPolicy }}
+  ports:
+    - name: p2p-tcp
+      port: {{ include "besu.p2pPort" $ }}
+      protocol: TCP
+      targetPort: p2p-tcp
+  selector:
+    {{- include "besu.selectorLabels" $ | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: "{{ include "besu.fullname" $ }}-0"
+{{- end }}

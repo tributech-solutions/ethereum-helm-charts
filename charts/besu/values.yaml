@@ -48,6 +48,24 @@ p2pNodePort:
       # -- Container pull policy
       pullPolicy: IfNotPresent
 
+# When p2pLoadBalancerPort is enabled, your P2P TCP port will be exposed via service type LoadBalancer.
+# This is useful if you want to expose and announce your besu peer to the Internet using the LoadBalancer IP.
+# Limitation: We can not expose the same port with different protocols. We currently do NOT expose the UDP port required for parts of besu peer discovery.
+# ref: https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
+p2pLoadBalancerPort:
+  # -- Expose P2P TCP port via LoadBalancer service
+  enabled: false
+  # -- P2P LoadBalancer service annotations (evaluated as template)
+  annotations: {}
+  # -- Port to be used
+  port: 30303
+  # -- Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints. There are two available options: Cluster and Local (default).
+  # Cluster obscures the client source IP and may cause a second hop to another node, but should have good overall load-spreading.
+  # Local preserves the client source IP and avoids a second hop for LoadBalancer and NodePort type Services, but risks potentially imbalanced traffic spreading.
+  # ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  # @default -- Local   
+  externalTrafficPolicy: Local
+
 ingress:
   # -- Ingress resource for the HTTP API
   enabled: false
@@ -136,10 +154,10 @@ rbac:
       - "get"
       - "list"
       - "watch"
-  # -- Required ClusterRole rules
+  # -- Required Role rules
   # @default -- See `values.yaml`
   rules:
-    # Required to get information about the serices nodePort.
+    # Required to get information about the services nodePort or loadBalancer IP.
     - apiGroups: [""]
       resources:
       - "services"
@@ -201,16 +219,16 @@ initContainers: []
 # -- Additional containers
 extraContainers: []
 
-# -- Additional volumes
+# -- Additional volumes (evaluated as template) 
 extraVolumes: []
 
-# -- Additional volume mounts
+# -- Additional volume mounts (evaluated as template) 
 extraVolumeMounts: []
 
 # -- Additional ports. Useful when using extraContainers
 extraPorts: []
 
-# -- Additional env variables
+# -- Additional env variables (evaluated as template) 
 extraEnv: []
 #- name: JAVA_OPTS
 #  value: "-Xmx6000m -Xms6000m"

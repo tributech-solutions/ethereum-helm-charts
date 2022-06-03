@@ -5,13 +5,13 @@
 - sh
 - -ac
 - >
-{{- if .Values.p2pNodePort.enabled }}
+{{- if or .Values.p2pNodePort.enabled .Values.p2pLoadBalancerPort.enabled }}
   . /env/init-nodeport;
 {{- end }}
   exec besu
   --data-path=/data
   --nat-method=NONE
-{{- if .Values.p2pNodePort.enabled }}
+{{- if or .Values.p2pNodePort.enabled .Values.p2pLoadBalancerPort.enabled }}
   --p2p-host=$EXTERNAL_IP
   --p2p-port=$EXTERNAL_PORT
 {{- else }}

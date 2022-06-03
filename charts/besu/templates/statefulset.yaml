@@ -67,6 +67,31 @@ spec:
             - name: env-nodeport
               mountPath: /env
       {{- end }}
+      {{- if .Values.p2pLoadBalancerPort.enabled }}
+        - name: init-loadbalancer-port
+          image: "{{ .Values.p2pLoadBalancerPort.initContainer.image.repository }}:{{ .Values.p2pLoadBalancerPort.initContainer.image.tag }}"
+          imagePullPolicy: {{.Values.p2pLoadBalancerPort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - sh
+            - -c
+            - >
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p-lb)" -o jsonpath='{.items[0].spec.ports[0].port}');
+              export EXTERNAL_IP=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p-lb)" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}');
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
       {{- if .Values.initChownData.enabled }}
         - name: init-chown-data
           image: "{{ .Values.initChownData.image.repository }}:{{ .Values.initChownData.image.tag }}"
@@ -97,9 +122,9 @@ spec:
           {{- end }}
           volumeMounts:
             {{- if .Values.extraVolumeMounts }}
-              {{ toYaml .Values.extraVolumeMounts | nindent 12}}
+              {{ (tpl (toYaml .Values.extraVolumeMounts) .) | nindent 12}}
             {{- end }}
-            {{- if .Values.p2pNodePort.enabled }}
+            {{- if or .Values.p2pNodePort.enabled .Values.p2pLoadBalancerPort.enabled }}
             - name: env-nodeport
               mountPath: /env
             {{- end }}
@@ -140,7 +165,7 @@ spec:
                   key: {{ $key }}
           {{- end }}
           {{- if .Values.extraEnv }}
-            {{- toYaml .Values.extraEnv | nindent 12 }}
+            {{- (tpl (toYaml .Values.extraEnv) .) | nindent 12 }}
           {{- end }}
       {{- if .Values.extraContainers }}
         {{ toYaml .Values.extraContainers | nindent 8}}
@@ -153,12 +178,12 @@ spec:
         {{- toYaml .Values.tolerations | nindent 8 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       volumes:
-      {{- if .Values.p2pNodePort.enabled }}
+      {{- if or .Values.p2pNodePort.enabled .Values.p2pLoadBalancerPort.enabled }}
         - name: env-nodeport
           emptyDir: {}
       {{- end }}
       {{- if .Values.extraVolumes }}
-        {{ toYaml .Values.extraVolumes | nindent 8}}
+        {{ (tpl (toYaml .Values.extraVolumes) .) | nindent 8 }}
       {{- end }}
   {{- if not .Values.persistence.enabled }}
         - name: storage

@@ -64,6 +64,8 @@ Create the name of the service account to use
 {{- define "besu.p2pPort" -}}
 {{- if .Values.p2pNodePort.enabled }}
 {{- print .Values.p2pNodePort.port }}
+{{- else if .Values.p2pLoadBalancerPort.enabled }}
+{{- print .Values.p2pLoadBalancerPort.port }}
 {{- else }}
 {{- printf "30303" -}}
 {{- end }}

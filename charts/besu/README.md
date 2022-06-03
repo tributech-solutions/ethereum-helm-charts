@@ -1,7 +1,7 @@
 
 # besu
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 An Ethereum execution layer client designed to be enterprise-friendly for both public and private, permissioned network use cases. Besu is written in Java and released under the Apache 2.0 Licence.
 
@@ -20,10 +20,10 @@ An Ethereum execution layer client designed to be enterprise-friendly for both p
 | customCommand | list | `[]` | Command replacement for the besu container |
 | extraArgs | list | `[]` | Extra args for the besu container |
 | extraContainers | list | `[]` | Additional containers |
-| extraEnv | list | `[]` | Additional env variables |
+| extraEnv | list | `[]` | Additional env variables (evaluated as template)  |
 | extraPorts | list | `[]` | Additional ports. Useful when using extraContainers |
-| extraVolumeMounts | list | `[]` | Additional volume mounts |
-| extraVolumes | list | `[]` | Additional volumes |
+| extraVolumeMounts | list | `[]` | Additional volume mounts (evaluated as template)  |
+| extraVolumes | list | `[]` | Additional volumes (evaluated as template)  |
 | fullnameOverride | string | `""` | Overrides the chart's computed fullname |
 | image.pullPolicy | string | `"IfNotPresent"` | besu container pull policy |
 | image.repository | string | `"hyperledger/besu"` | besu container image repository |
@@ -43,6 +43,10 @@ An Ethereum execution layer client designed to be enterprise-friendly for both p
 | livenessProbe | object | See `values.yaml` | Liveness probe |
 | nameOverride | string | `""` | Overrides the chart's name |
 | nodeSelector | object | `{}` | Node selector for pods |
+| p2pLoadBalancerPort.annotations | object | `{}` | P2P LoadBalancer service annotations (evaluated as template) |
+| p2pLoadBalancerPort.enabled | bool | `false` | Expose P2P TCP port via LoadBalancer service |
+| p2pLoadBalancerPort.externalTrafficPolicy | string | Local    | Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints. There are two available options: Cluster and Local (default). Cluster obscures the client source IP and may cause a second hop to another node, but should have good overall load-spreading. Local preserves the client source IP and avoids a second hop for LoadBalancer and NodePort type Services, but risks potentially imbalanced traffic spreading. ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip |
+| p2pLoadBalancerPort.port | int | `30303` | Port to be used |
 | p2pNodePort.enabled | bool | `false` | Expose P2P port via NodePort |
 | p2pNodePort.initContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
 | p2pNodePort.initContainer.image.repository | string | `"lachlanevenson/k8s-kubectl"` | Container image to fetch nodeport information |
@@ -64,7 +68,7 @@ An Ethereum execution layer client designed to be enterprise-friendly for both p
 | priorityClassName | string | `nil` | Pod priority class |
 | rbac.clusterRules | list | See `values.yaml` | Required ClusterRole rules |
 | rbac.create | bool | `true` | Specifies whether RBAC resources are to be created |
-| rbac.rules | list | See `values.yaml` | Required ClusterRole rules |
+| rbac.rules | list | See `values.yaml` | Required Role rules |
 | readinessProbe | object | See `values.yaml` | Readiness probe |
 | replicas | int | `1` | Number of replicas |
 | resources | object | `{}` | Resource requests and limits |
@@ -112,4 +116,17 @@ replicas: 1
 p2pNodePort:
   enabled: true
   port: 31000
+```
+
+## Exposing the P2P service (TCP only) via LoadBalancer
+
+This will make your node accessible via the Internet using a service of type [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer).
+When using `p2pLoadBalancerPort.enabled` the exposed IP address on your ENR record will be the "public IP" of the LoadBalancer service.
+
+**Limitations:** Limitation: We can not expose the same port with different protocols. We currently do NOT expose the UDP port required for parts of besu peer discovery.
+
+```yaml
+p2pLoadBalancerPort:
+  enabled: true
+  port: 30303
 ```
