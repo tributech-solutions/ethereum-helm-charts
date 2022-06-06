@@ -84,7 +84,7 @@ spec:
             - -c
             - >
               export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p-lb)" -o jsonpath='{.items[0].spec.ports[0].port}');
-              export EXTERNAL_IP=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p-lb)" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}');
+              COUNT=0; until false; do export EXTERNAL_IP=$(kubectl get services -A -l "pod in (${POD_NAME}), type in (p2p-lb)" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'); if [ $COUNT -ge 120 ]; then echo "waited >= 2min for loadbalancer IP, will abort" && exit 1; fi; if [ ! -z "$EXTERNAL_IP" ]; then echo "found loadbalancer IP $EXTERNAL_IP" && break; else echo "wait 5sec for loadbalancer IP" && COUNT=$((COUNT+5)) && sleep 5; fi; done;
               echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
               cat /env/init-nodeport;
